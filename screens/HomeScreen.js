@@ -1,7 +1,7 @@
 // HomeScreen.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet , Image ,Platform ,Dimensions } from 'react-native';
-import travelImage from './assets/images/travel.png'
+import travelImage from '../assets/images/travel.png'
 import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
 
 const { width } = Dimensions.get('window');

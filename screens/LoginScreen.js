@@ -9,7 +9,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import travelImage from './assets/images/tourist.png';
+import travelImage from '../assets/images/tourist.png';
 
 const { width, height } = Dimensions.get('window'); 
 

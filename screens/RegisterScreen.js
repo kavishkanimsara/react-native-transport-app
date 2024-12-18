@@ -1,7 +1,7 @@
 // RegisterScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert ,Image ,Dimensions } from 'react-native';
-import travelImage from './assets/images/travel_boy.png';
+import travelImage from '../assets/images/travel_boy.png';
 const { width, height } = Dimensions.get('window'); 
 export default function RegisterScreen() {
 
