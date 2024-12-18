@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, ScrollView, ActivityIndicator } from 'react-native';
-import { useFonts, Poppins_400Regular, Poppins_700Bold } from '@expo-google-fonts/poppins';
-import { MaterialIcons } from '@expo/vector-icons'; // Importing icons
+import { View, Text, StyleSheet, Image, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { useClickCount } from '../context/ClickCountContext'; // Import the custom hook
 
 export default function WelcomeScreen({ route }) {
   const { username } = route.params;
+  const { clickCount, incrementClickCount } = useClickCount(); // Access context value and function
   const [cars, setCars] = useState([]);
 
-  const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-    Poppins_700Bold,
-  });
-
+  // Fetch car data from the API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://freetestapi.com/api/v1/cars?limit=20');
+        const response = await fetch('https://freetestapi.com/api/v1/cars?limit=5');
         const data = await response.json();
-        setCars(data);
+        setCars(data); 
       } catch (error) {
         console.error(error);
       }
@@ -26,59 +22,25 @@ export default function WelcomeScreen({ route }) {
     fetchData();
   }, []);
 
-  if (!fontsLoaded) {
-    return <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />;
-  }
+  // Handle click on a car item
+  const handleCarClick = () => {
+    incrementClickCount(); 
+  };
 
+  // Render each car's card
   const renderCarCard = ({ item }) => (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={handleCarClick}>
       <Image source={{ uri: item.image }} style={styles.cardImage} />
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.make} {item.model} ({item.year})</Text>
-        
-        {/* Car Information */}
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <MaterialIcons name="color-lens" size={24} color="#7f8c8d" />
-            <Text style={styles.label}>Color:</Text>
-            <Text style={styles.cardText}>{item.color}</Text>
-          </View>
-          
-        </View>
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <MaterialIcons name="trip-origin" size={24} color="#7f8c8d" /> {/* Updated Icon */}
-            <Text style={styles.label}>Mileage:</Text>
-            <Text style={styles.cardText}>{item.mileage} km</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <MaterialIcons name="attach-money" size={24} color="#7f8c8d" />
-            <Text style={styles.label}>Price:</Text>
-            <Text style={styles.cardText}>${item.price}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <MaterialIcons name="local-gas-station" size={24} color="#7f8c8d" />
-            <Text style={styles.label}>Fuel Type:</Text>
-            <Text style={styles.cardText}>{item.fuelType}</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <MaterialIcons name="settings" size={24} color="#7f8c8d" />
-            <Text style={styles.label}>Transmission:</Text>
-            <Text style={styles.cardText}>{item.transmission}</Text>
-          </View>
-        </View>
-
-        {/* Features */}
-        <Text style={styles.label}>Features:</Text>
-        <Text style={styles.cardText}>{item.features.join(', ')}</Text>
+        <Text>Color: {item.color}</Text>
+        <Text>Mileage: {item.mileage} km</Text>
+        <Text>Price: ${item.price}</Text>
+        <Text>Fuel Type: {item.fuelType}</Text>
+        <Text>Transmission: {item.transmission}</Text>
+        <Text>Features: {item.features.join(', ')}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -90,6 +52,11 @@ export default function WelcomeScreen({ route }) {
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.cardList}
       />
+      
+      {/* Floating button */}
+      <TouchableOpacity style={styles.floatingButton} onPress={incrementClickCount}>
+        <Text style={styles.floatingButtonText}>{clickCount}</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -98,73 +65,57 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     textAlign: 'center',
     marginVertical: 20,
-    fontFamily: 'Poppins_700Bold',
   },
   cardList: {
     paddingBottom: 20,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 8,
     marginBottom: 20,
     padding: 15,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
   },
   cardImage: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
+    borderRadius: 8,
     marginBottom: 15,
   },
   cardContent: {
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 10,
-    color: '#333',
-    fontFamily: 'Poppins_700Bold',
   },
-  cardText: {
-    fontSize: 16,
-    marginBottom: 5,
-    fontFamily: 'Poppins_400Regular',
-  },
-  loader: {
-    flex: 1,
+  floatingButton: {
+    position: 'absolute',
+    bottom: 20,  
+    right: 20,  
+    backgroundColor: '#6200ee',
+    borderRadius: 50,
+    width: 60,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
+    elevation: 5,
+    zIndex: 0,   
   },
-  infoContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 10,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginRight: 20,
-    marginLeft: 5,
-    marginBottom: 5,
-  },
-  label: {
-    fontWeight: '700',
-    fontSize: 16,
-    color: '#333',
-    marginRight: 5,
-    marginLeft: 5,
+  floatingButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
